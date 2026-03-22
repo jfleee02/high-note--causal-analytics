@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>High Note: Freemium Conversion Analytics</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F7F5F0;
+      --ink: #1A1714;
+      --muted: #6B6560;
+      --accent: #C94F2C;
+      --accent2: #3B6EA5;
+      --rule: #D9D4CC;
+      --card-bg: #FFFFFF;
+      --tag-bg: #EDE9E3;
+      --serif: 'DM Serif Display', Georgia, serif;
+      --sans: 'DM Sans', sans-serif;
+      --mono: 'DM Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── TOP NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(247,245,240,0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--rule);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(1.5rem, 5vw, 4rem);
+      height: 56px;
+    }
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a {
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--ink); }
+
+    /* ── HERO ── */
+    .hero {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: clamp(5rem, 12vw, 9rem) clamp(1.5rem, 5vw, 4rem) clamp(3rem, 6vw, 5rem);
+    }
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .eyebrow-line {
+      width: 32px;
+      height: 1px;
+      background: var(--accent);
+    }
+    .eyebrow-text {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .hero h1 {
+      font-family: var(--serif);
+      font-size: clamp(2.6rem, 6vw, 4.5rem);
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+      margin-bottom: 1rem;
+    }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+    .hero-sub {
+      font-size: 1.1rem;
+      color: var(--muted);
+      font-weight: 300;
+      max-width: 600px;
+      margin-bottom: 2.5rem;
+      line-height: 1.65;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem 2rem;
+      margin-bottom: 2.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--rule);
+    }
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+    .meta-label {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .meta-value {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--ink);
+    }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.4rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: var(--sans);
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary {
+      background: var(--ink);
+      color: var(--bg);
+    }
+    .btn-primary:hover { background: var(--accent); }
+    .btn-outline {
+      background: transparent;
+      color: var(--ink);
+      border: 1.5px solid var(--rule);
+    }
+    .btn-outline:hover { border-color: var(--ink); }
+
+    /* ── DIVIDER ── */
+    .divider {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 clamp(1.5rem, 5vw, 4rem);
+    }
+    .divider hr { border: none; border-top: 1px solid var(--rule); }
+
+    /* ── SECTION ── */
+    section {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 5vw, 4rem);
+    }
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .section-num {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+    .section-title {
+      font-family: var(--serif);
+      font-size: clamp(1.6rem, 3vw, 2.1rem);
+      line-height: 1.2;
+    }
+
+    /* ── ABSTRACT ── */
+    .abstract-box {
+      background: var(--card-bg);
+      border: 1px solid var(--rule);
+      border-left: 3px solid var(--accent);
+      padding: 2rem 2.5rem;
+      border-radius: 0 6px 6px 0;
+    }
+    .abstract-box p {
+      font-size: 0.97rem;
+      line-height: 1.8;
+      color: var(--ink);
+    }
+    .abstract-box strong { color: var(--accent); font-weight: 600; }
+
+    /* ── STATS ROW ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 2.5rem 0;
+    }
+    .stat-cell {
+      background: var(--card-bg);
+      padding: 1.6rem 1.5rem;
+      text-align: center;
+    }
+    .stat-number {
+      font-family: var(--serif);
+      font-size: 2rem;
+      line-height: 1;
+      margin-bottom: 0.4rem;
+      color: var(--ink);
+    }
+    .stat-number.accent { color: var(--accent); }
+    .stat-number.accent2 { color: var(--accent2); }
+    .stat-desc {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    /* ── METHODS ── */
+    .methods-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+    }
+    .method-card {
+      background: var(--card-bg);
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      padding: 1.5rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .method-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 4px 20px rgba(201,79,44,0.08);
+    }
+    .method-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .method-name {
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      margin-bottom: 0.5rem;
+    }
+    .method-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── FINDINGS ── */
+    .findings-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+    }
+    .finding-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1.25rem;
+      align-items: start;
+      padding: 1.5rem;
+      background: var(--card-bg);
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+    }
+    .finding-tag {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: var(--tag-bg);
+      color: var(--muted);
+      padding: 0.3rem 0.65rem;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+    .finding-tag.hot {
+      background: rgba(201,79,44,0.1);
+      color: var(--accent);
+    }
+    .finding-tag.blue {
+      background: rgba(59,110,165,0.1);
+      color: var(--accent2);
+    }
+    .finding-text {
+      font-size: 0.95rem;
+      line-height: 1.65;
+    }
+    .finding-text strong { font-weight: 600; }
+    .highlight-num {
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      color: var(--accent);
+    }
+
+    /* ── TABLE ── */
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 1.5rem;
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+    th {
+      background: var(--tag-bg);
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 0.85rem 1.25rem;
+      text-align: left;
+      font-weight: 500;
+    }
+    td {
+      padding: 0.8rem 1.25rem;
+      border-top: 1px solid var(--rule);
+      color: var(--ink);
+    }
+    tr:hover td { background: rgba(0,0,0,0.015); }
+    .td-accent { color: var(--accent); font-weight: 600; }
+    .td-mono { font-family: var(--mono); font-size: 0.82rem; }
+    .sig-stars { color: var(--accent); font-family: var(--mono); font-size: 0.8rem; }
+
+    /* ── STRATEGY ── */
+    .strategy-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+    }
+    .strategy-card {
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid var(--rule);
+      background: var(--card-bg);
+    }
+    .strategy-card:nth-child(1) { border-top: 3px solid var(--accent); }
+    .strategy-card:nth-child(2) { border-top: 3px solid var(--accent2); }
+    .strategy-card:nth-child(3) { border-top: 3px solid #5A9E6E; }
+    .strategy-card:nth-child(4) { border-top: 3px solid #9B6EA5; }
+    .strategy-num {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.16em;
+      color: var(--muted);
+      margin-bottom: 0.6rem;
+    }
+    .strategy-name {
+      font-family: var(--serif);
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .strategy-desc { font-size: 0.84rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── TECH STACK ── */
+    .tags-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+    }
+    .tech-tag {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      padding: 0.4rem 0.85rem;
+      border-radius: 4px;
+      background: var(--tag-bg);
+      color: var(--ink);
+      border: 1px solid var(--rule);
+    }
+    .tech-tag.primary {
+      background: var(--ink);
+      color: var(--bg);
+      border-color: var(--ink);
+    }
+
+    /* ── TEAM ── */
+    .team-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+    .team-member {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.55rem 1rem;
+      background: var(--card-bg);
+      border: 1px solid var(--rule);
+      border-radius: 100px;
+      font-size: 0.85rem;
+    }
+    .team-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--tag-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--rule);
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2.5rem clamp(1.5rem, 5vw, 4rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .footer-left {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .footer-right {
+      display: flex;
+      gap: 1.5rem;
+    }
+    .footer-right a {
+      font-size: 0.82rem;
+      color: var(--muted);
+      text-decoration: none;
+    }
+    .footer-right a:hover { color: var(--ink); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hero h1 { animation: fadeUp 0.7s ease both; }
+    .hero-sub { animation: fadeUp 0.7s 0.1s ease both; }
+    .hero-meta { animation: fadeUp 0.7s 0.2s ease both; }
+    .hero-actions { animation: fadeUp 0.7s 0.3s ease both; }
+
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      .finding-item { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <span class="nav-logo">Group 8 · UC Irvine</span>
+    <div class="nav-links">
+      <a href="#methods">Methods</a>
+      <a href="#findings">Findings</a>
+      <a href="#models">Models</a>
+      <a href="#strategy">Strategy</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <div class="eyebrow-line"></div>
+      <span class="eyebrow-text">Causal Analytics · Freemium Conversion</span>
+    </div>
+    <h1>High Note: Driving<br /><em>Free-to-Premium</em><br />Conversion</h1>
+    <p class="hero-sub">
+      A data-driven investigation into how peer influence, engagement depth, and
+      social behavior causally drive premium subscription adoption on a music streaming platform.
+    </p>
+    <div class="hero-meta">
+      <div class="meta-item">
+        <span class="meta-label">Dataset</span>
+        <span class="meta-value">43,827 users</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Methods</span>
+        <span class="meta-value">PSM · Logistic Regression</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Best Model AUC</span>
+        <span class="meta-value">0.812</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Course</span>
+        <span class="meta-value">BANA 201B · Merage School</span>
+      </div>
+    </div>
+    <div class="hero-actions">
+      <a href="#" class="btn btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        View on GitHub
+      </a>
+      <a href="#findings" class="btn btn-outline">Read Findings ↓</a>
+    </div>
+  </div>
+
+  <div class="divider"><hr /></div>
+
+  <!-- ABSTRACT -->
+  <section id="abstract">
+    <div class="section-header">
+      <span class="section-num">00</span>
+      <h2 class="section-title">Abstract</h2>
+    </div>
+    <div class="abstract-box">
+      <p>
+        This project investigates the behavioral and social drivers of free-to-premium conversion on
+        High Note, a freemium music streaming platform. Using a dataset of 43,827 users, we apply
+        <strong>Welch's t-tests</strong> for descriptive comparison, <strong>Propensity Score Matching (PSM)</strong> to identify
+        the causal effect of peer influence, and <strong>logistic regression</strong> across five model specifications
+        to isolate independent predictors of adoption. Our central finding: having at least one premium
+        subscriber friend causes a statistically significant <strong>+9.12 percentage point increase</strong> in
+        conversion probability after removing 3.39 pp of selection bias. The full model achieves an
+        <strong>AUC of 0.812</strong>, with subscriber friend count, loved tracks, shouts, and songs listened
+        as the strongest predictors.
+      </p>
+    </div>
+
+    <!-- KEY STATS -->
+    <div class="stats-row">
+      <div class="stat-cell">
+        <div class="stat-number accent">+9.12 pp</div>
+        <div class="stat-desc">Causal effect of<br />peer influence (PSM ATT)</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-number">0.812</div>
+        <div class="stat-desc">Full model AUC<br />(logistic regression)</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-number accent2">43,827</div>
+        <div class="stat-desc">User records<br />analyzed</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-number">1.82×</div>
+        <div class="stat-desc">Odds ratio for each<br />additional subscriber friend</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-number accent">8%</div>
+        <div class="stat-desc">Overall premium<br />adoption rate</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><hr /></div>
+
+  <!-- METHODS -->
+  <section id="methods">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2 class="section-title">Methodology</h2>
+    </div>
+    <p style="color:var(--muted); font-size:0.95rem; max-width:620px; margin-bottom:0.5rem;">
+      Analysis proceeds in four stages — from descriptive profiling to causal inference to predictive modeling.
+    </p>
+    <div class="methods-grid">
+      <div class="method-card">
+        <div class="method-icon">📊</div>
+        <div class="method-name">Descriptive Statistics</div>
+        <div class="method-desc">Welch's two-sample t-tests compared adopters vs. non-adopters across all 14 variables, confirming significant differences at p &lt; 0.001 for every feature.</div>
+      </div>
+      <div class="method-card">
+        <div class="method-icon">🪜</div>
+        <div class="method-name">Participation Ladder</div>
+        <div class="method-desc">A behavioral framework organizing user activity from passive listening to active social participation: Songs → Loved Tracks → Playlists → Posts → Shouts.</div>
+      </div>
+      <div class="method-card">
+        <div class="method-icon">⚖️</div>
+        <div class="method-name">Propensity Score Matching</div>
+        <div class="method-desc">Nearest-neighbor 1:1 PSM on 13 covariates isolated the causal peer influence effect, matching 9,823 treated users to remove selection bias.</div>
+      </div>
+      <div class="method-card">
+        <div class="method-icon">🔢</div>
+        <div class="method-name">Logistic Regression</div>
+        <div class="method-desc">Five model specifications (demographics, consumption, social, network, and full) were compared by AUC and McFadden pseudo R², using VIF to rule out multicollinearity.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><hr /></div>
+
+  <!-- FINDINGS -->
+  <section id="findings">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Key Findings</h2>
+    </div>
+    <div class="findings-list">
+      <div class="finding-item">
+        <span class="finding-tag hot">Causal</span>
+        <p class="finding-text">
+          PSM reveals that peer influence is <strong>causal, not merely correlational</strong>. Having at least one premium subscriber friend causes a
+          <span class="highlight-num">+9.12 pp</span> increase in conversion probability (95% CI: [8.18%, 10.06%], p &lt; 0.001),
+          after removing 3.39 pp of selection bias from the raw 12.51 pp gap.
+        </p>
+      </div>
+      <div class="finding-item">
+        <span class="finding-tag hot">Strongest Predictor</span>
+        <p class="finding-text">
+          <strong>Subscriber friend count</strong> has the highest odds ratio in the full model at <span class="highlight-num">1.82×</span> —
+          each additional premium friend raises conversion odds by 82%, holding all else constant.
+          Loved tracks (1.61×) and shouts (1.44×) follow closely.
+        </p>
+      </div>
+      <div class="finding-item">
+        <span class="finding-tag blue">Engagement</span>
+        <p class="finding-text">
+          Premium adopters listen to <span class="highlight-num">91.9% more songs</span> (33,758 vs. 17,589)
+          and love <span class="highlight-num">204% more tracks</span> than free users. The engagement gap
+          widens as behaviors become more social — shouts differ by +232%, posts by +300%.
+        </p>
+      </div>
+      <div class="finding-item">
+        <span class="finding-tag blue">Social Network</span>
+        <p class="finding-text">
+          The Participation Ladder shows that the conversion signal strengthens at each social tier.
+          Passive listeners show the <strong>smallest gap</strong> between free and premium users;
+          socially interactive behaviors (posts, shouts) show the <strong>largest gap</strong>.
+        </p>
+      </div>
+      <div class="finding-item">
+        <span class="finding-tag">Counterintuitive</span>
+        <p class="finding-text">
+          Users from <strong>"good country" markets are less likely to convert</strong> after controlling for
+          other factors (OR = 0.84×, p = 0.003). Geographic market quality cuts against naive
+          geographic segmentation and warrants caution in targeting strategy.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><hr /></div>
+
+  <!-- MODEL COMPARISON -->
+  <section id="models">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Model Comparison</h2>
+    </div>
+    <p style="color:var(--muted); font-size:0.95rem; margin-bottom:0.5rem;">
+      Five logistic regression specifications compared by AUC and McFadden pseudo R².
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>Features</th>
+            <th>AUC</th>
+            <th>McFadden R²</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="td-accent">M5 — Full Model</td>
+            <td>All 14 variables</td>
+            <td class="td-mono td-accent">0.812</td>
+            <td class="td-mono td-accent">0.198</td>
+          </tr>
+          <tr>
+            <td>M3 — Social Only</td>
+            <td>subscriber_friend_cnt, posts, playlists, shouts</td>
+            <td class="td-mono">~0.77</td>
+            <td class="td-mono">~0.14</td>
+          </tr>
+          <tr>
+            <td>M2 — Consumption Only</td>
+            <td>songsListened, lovedTracks</td>
+            <td class="td-mono">~0.73</td>
+            <td class="td-mono">~0.11</td>
+          </tr>
+          <tr>
+            <td>M4 — Network Only</td>
+            <td>friend_cnt, avg_friend_age, avg_friend_male, friend_country_cnt</td>
+            <td class="td-mono">~0.68</td>
+            <td class="td-mono">~0.07</td>
+          </tr>
+          <tr>
+            <td>M1 — Demographics Only</td>
+            <td>age, male, good_country, tenure</td>
+            <td class="td-mono">~0.63</td>
+            <td class="td-mono">~0.04</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Odds Ratios -->
+    <div style="margin-top:2.5rem;">
+      <h3 style="font-family:var(--serif); font-size:1.15rem; margin-bottom:1rem;">Full Model — Top Predictors (Odds Ratios)</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Variable</th>
+              <th>Odds Ratio</th>
+              <th>95% CI</th>
+              <th>p-value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="td-mono">subscriber_friend_cnt</td>
+              <td class="td-accent">1.82×</td>
+              <td class="td-mono">[1.64, 2.02]</td>
+              <td><span class="sig-stars">***</span> &lt; 0.001</td>
+            </tr>
+            <tr>
+              <td class="td-mono">lovedTracks</td>
+              <td>1.61×</td>
+              <td class="td-mono">[1.48, 1.75]</td>
+              <td><span class="sig-stars">***</span> &lt; 0.001</td>
+            </tr>
+            <tr>
+              <td class="td-mono">shouts</td>
+              <td>1.44×</td>
+              <td class="td-mono">[1.19, 1.74]</td>
+              <td><span class="sig-stars">***</span> &lt; 0.001</td>
+            </tr>
+            <tr>
+              <td class="td-mono">songsListened</td>
+              <td>1.38×</td>
+              <td class="td-mono">[1.27, 1.50]</td>
+              <td><span class="sig-stars">***</span> &lt; 0.001</td>
+            </tr>
+            <tr>
+              <td class="td-mono">friend_cnt</td>
+              <td>1.29×</td>
+              <td class="td-mono">[1.18, 1.41]</td>
+              <td><span class="sig-stars">***</span> &lt; 0.001</td>
+            </tr>
+            <tr>
+              <td class="td-mono">playlists</td>
+              <td>1.21×</td>
+              <td class="td-mono">[1.12, 1.31]</td>
+              <td><span class="sig-stars">***</span> &lt; 0.001</td>
+            </tr>
+            <tr>
+              <td class="td-mono">good_country</td>
+              <td style="color:#888;">0.84×</td>
+              <td class="td-mono">[0.75, 0.94]</td>
+              <td><span class="sig-stars">**</span> 0.003</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><hr /></div>
+
+  <!-- STRATEGY -->
+  <section id="strategy">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2 class="section-title">Strategic Recommendations</h2>
+    </div>
+    <p style="color:var(--muted); font-size:0.95rem; max-width:600px; margin-bottom:0.5rem;">
+      An integrated free-to-fee strategy grounded in causal evidence from PSM and logistic regression.
+    </p>
+    <div class="strategy-grid">
+      <div class="strategy-card">
+        <div class="strategy-num">01 / SOCIAL</div>
+        <div class="strategy-name">Target Bridge Users</div>
+        <div class="strategy-desc">Prioritize free users with ≥1 subscriber friend for upgrade prompts and free trials. PSM proves a causal +9.12 pp lift from this trait alone.</div>
+      </div>
+      <div class="strategy-card">
+        <div class="strategy-num">02 / PRODUCT</div>
+        <div class="strategy-name">Promote Playlist Creation</div>
+        <div class="strategy-desc">Playlist creation remains independently significant in the full model. Design features that push users up the Participation Ladder toward content creation.</div>
+      </div>
+      <div class="strategy-card">
+        <div class="strategy-num">03 / TARGETING</div>
+        <div class="strategy-name">Activate Heavy Listeners</div>
+        <div class="strategy-desc">songsListened and lovedTracks are independent predictors. Time upgrade prompts to listening milestones and tailor messaging by content preference.</div>
+      </div>
+      <div class="strategy-card">
+        <div class="strategy-num">04 / EFFICIENCY</div>
+        <div class="strategy-name">Skip Passive Listeners</div>
+        <div class="strategy-desc">Passive listeners show the smallest free/premium gap. Concentrate conversion spend on socially active users who are behaviorally closest to willingness to pay.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><hr /></div>
+
+  <!-- TECH STACK -->
+  <section id="stack">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2 class="section-title">Tech Stack</h2>
+    </div>
+    <div class="tags-row">
+      <span class="tech-tag primary">Python</span>
+      <span class="tech-tag primary">pandas</span>
+      <span class="tech-tag primary">statsmodels</span>
+      <span class="tech-tag primary">scikit-learn</span>
+      <span class="tech-tag">seaborn</span>
+      <span class="tech-tag">matplotlib</span>
+      <span class="tech-tag">Logistic Regression</span>
+      <span class="tech-tag">Propensity Score Matching</span>
+      <span class="tech-tag">Welch's t-test</span>
+      <span class="tech-tag">VIF Analysis</span>
+      <span class="tech-tag">StandardScaler</span>
+      <span class="tech-tag">ROC / AUC</span>
+    </div>
+  </section>
+
+  <div class="divider"><hr /></div>
+
+  <!-- TEAM -->
+  <section id="team">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2 class="section-title">Team</h2>
+    </div>
+    <div class="team-row">
+      <div class="team-member"><div class="team-avatar">MF</div> Manaal Fatima</div>
+      <div class="team-member"><div class="team-avatar">JK</div> Jui Yu (Raynee) Kuo</div>
+      <div class="team-member"><div class="team-avatar">SL</div> Xiangning (Shannon) Li</div>
+      <div class="team-member"><div class="team-avatar">JL</div> Jonathan Lee</div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span class="footer-left">Group 8 · Merage School of Business · UC Irvine</span>
+    <div class="footer-right">
+      <a href="#">GitHub</a>
+      <a href="#">Report</a>
+      <a href="#">Portfolio</a>
+    </div>
+  </footer>
+
+</body>
+</html>
